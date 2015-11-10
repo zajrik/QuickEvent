@@ -44,7 +44,7 @@ function main()
 	// Syntax enforcement and capture groups for day, start,
 	// end, desc, and summary override
 	var fileSyntaxRegex =
-		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[a|p]?m?) (\d{1,2}(?::?\d{2})?[a|p]?m?)(?: ([^\|]+))?(?: \| ([^\|]+))?$/;
+		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|]+))?(?: \| ([^\|]+))?$/;
 
 	// Iterate through flags and save their argument data, throw appropriate
 	// errors when finished.
@@ -149,7 +149,7 @@ function main()
 	function convertTime(timeString, day)
 	{
 		var timeBuilder = '';
-		var timeRegex = /^(\d{1,2})(?::?(\d{2}))?([a|p]m?)?$/;
+		var timeRegex = /^(\d{1,2})(?::?(\d{2}))?(?:(a|p)m?)?$/;
 
 		var timeError = function()
 		{
@@ -164,7 +164,6 @@ function main()
 		var hour    = Number(time[1]);
 		var minutes = time[2] ? Number(time[2]) : 0;
 		var ap      = time[3] ? time[3] : null;
-		if (ap == 'am' || ap == 'pm') { ap = ap == 'am' ? 'a' : 'p' }
 
 		// Assert military time string if a/p is not provided
 		if (!ap && ([hour, minutes].join('')).length < 4) { timeError() }
