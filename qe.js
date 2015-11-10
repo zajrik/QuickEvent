@@ -51,10 +51,12 @@ function main()
 	{
 		for (i = 1; i < process.argv.length; i++)
 		{
-			if (process.argv[i] == '-f')
+			var flag     = function (f) { return process.argv[i] == f }
+			var flagData = function (f) { return process.argv[i + 1] }
+			if (flag('-f'))
 			{
 				fileProvided = true;
-				eventsFileName = process.argv[i + 1];
+				eventsFileName = flagData();
 				fileNameRegex =
 					/^(?:[^\/]+\\|[^\\]+\/)([^\\\/]+)$/;
 
@@ -72,16 +74,17 @@ function main()
 					eventsFile = process.cwd() + '/' + eventsFileName;
 				}
 			}
-			else if (process.argv[i] == '-m')
+			else if (flag('-m'))
 			{
-				month = process.argv[i + 1];
+				month = flagData();
 				monthDays = new Date(year, month, 0).getDate();
 			}
-			else if (process.argv[i] == '-y')
+			else if (flag('-y'))
 			{
-				year = process.argv[i + 1];
+				year = flagData();
 				monthDays = new Date(year, month, 0).getDate();
 			}
+			// else if (process.argv[i] == 'y')
 		}
 
 		// Throw flag errors and exit
@@ -361,7 +364,6 @@ function main()
 		summary = fileLines[1];
 		for (i = 1; i <= 2; i++) { fileLines.shift() }
 
-		// var fileOutputText = '';
 		var logData = new Array();
 
 		fileLines.forEach(function(line)
