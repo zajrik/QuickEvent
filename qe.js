@@ -20,8 +20,7 @@ function main()
 	var auth
 
 	var date  = new Date();
-	var month = (date.getMonth() + 1) < 9 ?
-		'0' + (date.getMonth() + 1) : date.getMonth() + 1;
+	var month = date.getMonth() + 1;
 	var year  = date.getFullYear();
 	var day;
 
@@ -213,9 +212,10 @@ function main()
 		var length = getLength(start, end);
 
 		// Build start dateTime
-		month = (month < 10) ? '0' + month : month;
-		day = (day < 10) ? '0' + day : day;
-		var startString = year + '-' + month + '-' + day + 'T' + start[0];
+		var dateString =
+			year + '-' + ((month < 10) ? '0' + month : month)
+			+ '-' + ((day < 10) ? '0' + day : day) + 'T';
+		var startString = dateString + start[0];
 
 		// Add daySpan to the end dateTime day
 		if ((Number(day) + length[1]) < 10)
@@ -235,8 +235,7 @@ function main()
 		if (month > 12) { month = '01'; year++}
 
 		// Build end dateTime
-		// var endString = [year, '-', month, '-', day, 'T', end[0]].join('');
-		var endString = year + '-' + month + '-' + day + 'T' + end[0];
+		var endString = dateString + end[0];
 
 		// Build calendar API-compatible event object
 		var eventTable =
@@ -342,6 +341,7 @@ function main()
 			// Report calendar api error
 			else if (err)
 			{
+				// console.log(arr.start.dateTime);
 				console.log(
 					'There was an error contacting the Calendar service: ' + err);
 				return;
@@ -380,10 +380,10 @@ function main()
 			// This should still be guaranteed to be unique given the
 			// small sample size of calendar events.
 			var id = sha1.hash(String((summaryOverride ? summaryOverride : summary)
-				+ ((day < 10) ? '0' + day : day) + start[0]	+ end[0])).slice(0,15);
+				+ ((day < 10) ? '0' + Number(day) : day) + start[0]	+ end[0]))
+				.slice(0,15);
 
 			// Save event file info with id for later lookup in log file
-			// fileOutputText += '[' + id + '] ' + line + '\n';
 			logData.push(
 			{
 				id: '[' + id + ']',
@@ -393,8 +393,7 @@ function main()
 				title: summaryOverride || summary,
 				description: desc,
 				length: ' [' + ((length[0].length < 5) ? ' ' : '') + length[0]
-					+ ' hr' + ((length[0] > 1) ? 's]' : ']'),
-
+					+ ' hr' + ((length[0] > 1) ? 's]' : ']')
 			});
 
 			var eventData = processEvent(
@@ -406,7 +405,7 @@ function main()
 		var columns = columnify(logData,
 		{
 			// minWidth: 7,
-			columnSplitter: ' | ',
+			columnSplitter: '  |  ',
 			maxWidth: 20
 		});
 
