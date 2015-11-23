@@ -84,7 +84,6 @@ function main()
 				year = flagData();
 				monthDays = new Date(year, month, 0).getDate();
 			}
-			// else if (process.argv[i] == 'y')
 		}
 
 		// Throw flag errors and exit
@@ -207,18 +206,67 @@ function main()
 		return new Array((hours + mins).toFixed(2), daySpan);
 	}
 
-	// Create a single calendar API-compatible event object given a summary
-	// string, a formatted start time and a formatted end time, and a description
-	function processEvent(id, summary, day, start, end, desc, colorId)
+	// Process given data, returning an object containing everything needed
+	// to create a calendar event via createEvent()
+	function processEvent(input)
 	{
-		// Get event length and daySpan
+		// Use fileSyntaxRegex's capture groups to parse line data
+		var data   = input.match(fileSyntaxRegex);
+		var day    = data[1];
+		var start  = convertTime(data[2]);
+		var end    = convertTime(data[3]);
+		var desc   = (typeof data[4] != 'undefined' ? data[4] : null);
 		var length = getLength(start, end);
 
+		var summaryOverride = (typeof data[5] != 'undefined' ? data[5] : null);
+
+		// Create id string, hash it, and slice the first 15 chars.
+		// This should still be guaranteed to be unique given the
+		// small sample size of calendar events.
+		var id = sha1.hash(String((summaryOverride ? summaryOverride : summary)
+			+ ((day < 10) ? '0' + Number(day) : day) + start[0]	+ end[0]))
+			.slice(0,15);
+
+		var processedEvent =
+		{
+			id: id,
+			summary: (summaryOverride ? summaryOverride : summary),
+			day: day,
+			start: start[0],
+			end: end[0],
+			desc: desc,
+			colorId: colorId,
+			length: length
+		}
+		return processedEvent;
+
+		// TODO: finish processEvent() so that it can be used with single event flag
+	}
+
+	// Create a single calendar API-compatible event object given data processed
+	// by processEvent()
+	function createEvent(processedEvent)
+	{
+		var id      = processedEvent.id;
+		var summary = processedEvent.summary;
+		var day     = processedEvent.day;
+		var start   = processedEvent.start;
+		var end     = processedEvent.end;
+		var desc    = processedEvent.desc;
+		var colorId = processedEvent.colorId;
+
+		// Get event length and daySpan
+		var length = processedEvent.length;
+
+		// Build/rebuild dateString
+		var dateString = function()
+		{
+			return year + '-' + ((month < 10) ? '0' + month : month)
+				+ '-' + ((day < 10) ? '0' + Number(day) : day) + 'T'
+		}
+
 		// Build start dateTime
-		var dateString =
-			year + '-' + ((month < 10) ? '0' + month : month)
-			+ '-' + ((day < 10) ? '0' + day : day) + 'T';
-		var startString = dateString + start[0];
+		var startString = dateString() + start;
 
 		// Add daySpan to the end dateTime day
 		if ((Number(day) + length[1]) < 10)
@@ -238,7 +286,7 @@ function main()
 		if (month > 12) { month = '01'; year++}
 
 		// Build end dateTime
-		var endString = dateString + end[0];
+		var endString = dateString() + end;
 
 		// Build calendar API-compatible event object
 		var eventTable =
@@ -265,7 +313,7 @@ function main()
 	}
 
 	// Insert an event into the user's primary calendar
-	function createEvent(auth, eventArr)
+	function insertEvent(auth, eventArr)
 	{
 		var event = eventArr;
 		var arr   = eventArr;
@@ -353,10 +401,8 @@ function main()
 
 	}
 
-	// Process events file data into an array of calendar API-compatible
-	// event objects using processEvent() to pass to iterate over and pass
-	// one by one to createEvent()
-	function processAllEvents(auth)
+	// Iterate over all file event lines and insert them all into the calendar
+	function insertAllEvents(auth)
 	{
 
 		// Save summary text and discard it from fileLines
@@ -368,40 +414,34 @@ function main()
 
 		fileLines.forEach(function(line)
 		{
-			// Use fileSyntaxRegex's capture groups to parse line data
-			var data = line.match(fileSyntaxRegex);
-			day   = data[1];
-			start = convertTime(data[2]);
-			end   = convertTime(data[3]);
-			desc  = (typeof data[4] != 'undefined' ? data[4] : null);
-			length = getLength(start, end);
+			var processedEvent = processEvent(line);
 
-			var summaryOverride = (typeof data[5] != 'undefined' ? data[5] : null);
+			var id      = processedEvent.id;
+			var summary = processedEvent.summary;
+			var day     = processedEvent.day;
+			var start   = processedEvent.start;
+			var end     = processedEvent.end;
+			var desc    = processedEvent.desc;
+			var colorId = processedEvent.colorId;
 
-			// Create id string, hash it, and slice the first 15 chars.
-			// This should still be guaranteed to be unique given the
-			// small sample size of calendar events.
-			var id = sha1.hash(String((summaryOverride ? summaryOverride : summary)
-				+ ((day < 10) ? '0' + Number(day) : day) + start[0]	+ end[0]))
-				.slice(0,15);
+			var length  = processedEvent.length;
+
 
 			// Save event file info with id for later lookup in log file
 			logData.push(
 			{
 				id: '[' + id + ']',
 				day: day,
-				start: data[2],
-				end: data[3],
-				title: summaryOverride || summary,
+				start: start,
+				end: end,
+				title: summary,
 				description: desc,
 				length: ' [' + ((length[0].length < 5) ? ' ' : '') + length[0]
 					+ ' hr' + ((length[0] > 1) ? 's]' : ']')
 			});
 
-			var eventData = processEvent(
-				id, (summaryOverride ? summaryOverride : summary),
-				day, start, end, desc, colorId);
-			createEvent(auth, eventData);
+			var eventData = createEvent(processedEvent)
+			insertEvent(auth, eventData);
 		});
 
 		var columns = columnify(logData,
@@ -451,7 +491,7 @@ function main()
 			}
 			// Authorize a client with the loaded credentials, then begin
 			// processing and creating all the calendar events
-			authorize(JSON.parse(content), processAllEvents);
+			authorize(JSON.parse(content), insertAllEvents);
 		});
 
 		/**
