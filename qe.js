@@ -32,7 +32,7 @@ function main()
 	var desc;
 	var colorId;
 
-	var timeEror;
+	var timeError;
 
 	var fileProvided   = false;
 	var eventsFile     = '';
