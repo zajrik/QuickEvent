@@ -213,11 +213,9 @@ function main()
 		var day    = data[1];
 		var start  = convertTime(data[2]);
 		var end    = convertTime(data[3]);
-//		var desc   = (typeof data[4] != 'undefined' ? data[4] : null);
 		var desc   = data[4] ? data[4] : null;
 		var length = getLength(start, end);
 
-//		var summaryOverride = (typeof data[5] != 'undefined' ? data[5] : null);
 		var summaryOverride = data[5] ? data[5] : null;
 
 		// Create id string, hash it, and slice the first 15 chars.
@@ -276,16 +274,10 @@ function main()
 
 		// Roll-over month if day exceeds the number of days in the month
 		// after adding daySpan
-		if (day > monthDays)
-		{
-			day = '01';
-			//month = ((Number(month) + 1) < 10) ?
-			//	'0' + Number(Number(month) + 1) : (Number(month) + 1);
-			month++;
-		}
+		if (day > monthDays) { day = '01'; month++; }
 
 		// Roll-over year if event length runs past the end of the year
-		if (month > 12) { month = '01'; year++}
+		if (month > 12) { month = '01'; year++ }
 
 		// Build end dateTime
 		var endString = dateString() + end;
@@ -448,7 +440,6 @@ function main()
 
 		var columns = columnify(logData,
 		{
-			// minWidth: 7,
 			columnSplitter: '  |  ',
 			maxWidth: 20
 		});
