@@ -89,8 +89,7 @@ function main()
 		// Throw flag errors and exit
 		if (!fileProvided)
 		{
-			console.error(
-				'You must provide the name/path of the calendar events file.');
+			console.error('You must provide the name/path of the calendar events file.');
 			process.exit();
 		}
 		else if (month < 1 || month > 12)
@@ -160,7 +159,6 @@ function main()
 			process.exit();
 		}
 
-		// var nums = time.split('');
 		var time    = timeString.match(timeRegex);
 		var hour    = Number(time[1]);
 		var minutes = time[2] ? Number(time[2]) : 0;
@@ -215,16 +213,18 @@ function main()
 		var day    = data[1];
 		var start  = convertTime(data[2]);
 		var end    = convertTime(data[3]);
-		var desc   = (typeof data[4] != 'undefined' ? data[4] : null);
+//		var desc   = (typeof data[4] != 'undefined' ? data[4] : null);
+		var desc   = data[4] ? data[4] : null;
 		var length = getLength(start, end);
 
-		var summaryOverride = (typeof data[5] != 'undefined' ? data[5] : null);
+//		var summaryOverride = (typeof data[5] != 'undefined' ? data[5] : null);
+		var summaryOverride = data[5] ? data[5] : null;
 
 		// Create id string, hash it, and slice the first 15 chars.
 		// This should still be guaranteed to be unique given the
 		// small sample size of calendar events.
 		var id = sha1.hash(String((summaryOverride ? summaryOverride : summary)
-			+ ((day < 10) ? '0' + Number(day) : day) + start[0]	+ end[0]))
+			+ ((day < 10) ? '0' + Number(day) : day) + start[0] + end[0]))
 			.slice(0,15);
 
 		var processedEvent =
@@ -238,6 +238,7 @@ function main()
 			colorId: colorId,
 			length: length
 		}
+		
 		return processedEvent;
 
 		// TODO: finish processEvent() so that it can be used with single event flag
@@ -278,8 +279,9 @@ function main()
 		if (day > monthDays)
 		{
 			day = '01';
-			month = ((Number(month) + 1) < 10) ?
-				'0' + (Number(month) + 1) : (Number(month) + 1);
+			//month = ((Number(month) + 1) < 10) ?
+			//	'0' + Number(Number(month) + 1) : (Number(month) + 1);
+			month++;
 		}
 
 		// Roll-over year if event length runs past the end of the year
