@@ -43,7 +43,8 @@ function main()
 	// Syntax enforcement and capture groups for day, start,
 	// end, desc, and summary override
 	var fileSyntaxRegex =
-		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|]+))?(?: \| ([^\|]+))?$/;
+		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|<]+))?(?: \| ([^\|<]+))?(?: << (\d+))?$/;
+//		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|]+))?(?: \| ([^\|]+))?$/;
 
 	// Iterate through flags and save their argument data, throw appropriate
 	// errors when finished.
@@ -217,6 +218,7 @@ function main()
 		var length = getLength(start, end);
 
 		var summaryOverride = data[5] ? data[5] : null;
+		var monthOverride   = data[6] ? data[6] : null;
 
 		// Create id string, hash it, and slice the first 15 chars.
 		// This should still be guaranteed to be unique given the
@@ -229,6 +231,7 @@ function main()
 		{
 			id: id,
 			summary: (summaryOverride ? summaryOverride : summary),
+			month: (monthOverride ? monthOverride : month),
 			day: day,
 			start: start[0],
 			end: end[0],
@@ -248,6 +251,7 @@ function main()
 	{
 		var id      = processedEvent.id;
 		var summary = processedEvent.summary;
+		var month   = processedEvent.month;
 		var day     = processedEvent.day;
 		var start   = processedEvent.start;
 		var end     = processedEvent.end;
@@ -412,6 +416,7 @@ function main()
 
 			var id      = processedEvent.id;
 			var summary = processedEvent.summary;
+			var month   = processedEvent.month;
 			var day     = processedEvent.day;
 			var start   = processedEvent.start;
 			var end     = processedEvent.end;
@@ -425,6 +430,7 @@ function main()
 			logData.push(
 			{
 				id: '[' + id + ']',
+				month: month,
 				day: day,
 				start: start,
 				end: end,
