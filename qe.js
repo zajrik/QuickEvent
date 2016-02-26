@@ -43,7 +43,7 @@ function main()
 	// Syntax enforcement and capture groups for day, start,
 	// end, desc, and summary override
 	var fileSyntaxRegex =
-		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|<]+))?(?: \| ([^\|<]+))?(?: << (\d+))?$/;
+		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|<]+))?(?: \| ([^\|<]+))?(?: << (\d{1,2}))?$/;
 //		/^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|]+))?(?: \| ([^\|]+))?$/;
 
 	// Iterate through flags and save their argument data, throw appropriate
@@ -240,6 +240,14 @@ function main()
 			length: length
 		}
 		
+		// Break if month override is invalid
+		if (monthOverride && (monthOverride > 12 || monthOverride < 1))
+		{
+			console.error("Month override in entry with id [" + id + "] is invalid.");
+			console.error(processedEvent);
+			process.exit();
+		}
+
 		return processedEvent;
 
 		// TODO: finish processEvent() so that it can be used with single event flag
