@@ -1,5 +1,6 @@
-client_secret.json
-colors.js
-log*
-shifts*
-test*
+client_*.json
+node_modules/*
+typings/*
+.vscode/*
+bin/*
+storage/*
