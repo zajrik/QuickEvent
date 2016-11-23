@@ -1,9 +1,11 @@
 'use strict';
+import { LocalStorage } from 'node-localstorage';
 import GoogleAuth from './lib/GoogleAuth';
 import Calendar from './lib/Calendar';
 import * as yargs from 'yargs';
-
-type int = number;
+import * as path from 'path';
+import * as fs from 'fs';
+import dirExists from './lib/util/DirExists';
 
 const argOpts: any = {
 	f: {
@@ -26,11 +28,17 @@ const argv: any = yargs
 	.options(argOpts)
 	.argv;
 
-console.log(argv);
-async function main(): Promise<any>
+const windows: boolean = process.platform === 'win32';
+const homeDir: string = process.env[windows ? 'USERPROFILE' : 'HOME'];
+const qeDir: string = path.join(homeDir, '.qe');
+if (!dirExists(qeDir)) fs.mkdirSync(qeDir);
 
+const storage: LocalStorage = new LocalStorage(path.join(qeDir, 'localstorage'));
+
+async function main(): Promise<any>
 {
-	const auth: GoogleAuth = new GoogleAuth(argv.secret, ['https://www.googleapis.com/auth/calendar']);
+	const scopes: string[] = ['https://www.googleapis.com/auth/calendar'];
+	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
 	await auth.authorize();
 	const calendar: Calendar = new Calendar(auth.client);
 	console.log(await calendar.fetchUpcomingEvents());

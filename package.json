@@ -2,9 +2,12 @@
   "name": "qe",
   "version": "2.0.0",
   "description": "Simple cli program to quickly add a batch of events to a Google calendar via simple shorthand syntax",
-  "main": "bin/App",
+  "main": "./bin/App.sh",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "qe": "bin/App.js"
   },
   "repository": {
     "type": "git",

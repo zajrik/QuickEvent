@@ -34,7 +34,9 @@ export type Oauth2Client = {
 
 /**
  * Handles creation and authorization of an Oauth2Client instance
- * for use with Google apis
+ * for use with Google apis as well as storage of information
+ * related to those purposes. Requires a node-localstorage insance
+ * to be passed upon creation
  */
 export default class GoogleAuth
 {
@@ -44,15 +46,14 @@ export default class GoogleAuth
 	public scopes: string[];
 	public client: Oauth2Client;
 
-	public constructor(clientSecretPath: string, scopes: string[])
+	public constructor(clientSecretPath: string, scopes: string[], storage: LocalStorage)
 	{
-		this.storage = new LocalStorage('./localstorage');
 		this.scopes = scopes;
+		this.storage = storage;
 
 		if (!clientSecretPath && !this.storage.getItem('clientSecretpath'))
 			throw new Error('You must provide a client_secret.json if this is the first time running.');
-		if (clientSecretPath)
-			this.storage.setItem('clientSecretpath', path.resolve(clientSecretPath));
+		if (clientSecretPath) this.storage.setItem('clientSecretpath', path.resolve(clientSecretPath));
 
 		this.credentials = JSON.parse(fs.readFileSync(this.storage.getItem('clientSecretpath')).toString());
 	}
@@ -70,7 +71,7 @@ export default class GoogleAuth
 			scope: this.scopes
 		});
 
-		console.log(`Authorize this app by visiting this url:\n${authUrl}\n\n`);
+		console.log(`Authorize this app by visiting this url:\n${authUrl}\n`);
 		const code: string = await prompt('Enter the code from that page here: ');
 		let token: Token;
 		try
