@@ -121,6 +121,6 @@ export default class GoogleAuth
 		this.client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
 		if (!this.storage.getItem('token')) this.client = await this.getNewToken(this.client);
-		this.client.credentials = this.getToken();
+		else this.client.credentials = this.getToken();
 	}
 }
