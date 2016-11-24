@@ -23,6 +23,7 @@
     "google-auth-library": "^0.9.9",
     "googleapis": "^14.2.0",
     "moment": "^2.16.0",
+    "moment-timezone": "^0.5.9",
     "node-localstorage": "^1.3.0",
     "prompt-promise": "^1.0.3",
     "yargs": "^6.4.0"
