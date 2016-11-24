@@ -1,4 +1,5 @@
 'use strict';
+import Event from './structures/Event';
 import * as moment from 'moment';
 
 type int = number;
@@ -17,8 +18,14 @@ export default class EventBuilder
 	private _length: number;
 
 	public constructor() {}
+
+	/** Set the color for the event */
 	public color(color: int): this { this._colorId = String(color); return this; }
+
+	/** Set the summary for the event */
 	public summary(summary: string): this { this._summary = summary; return this; }
+
+	/** Set the description for the event */
 	public description(desc: string): this { this._description = desc; return this; }
 
 	/**
@@ -30,10 +37,19 @@ export default class EventBuilder
 		return this;
 	}
 
+	/** Set the end time of the event. Accepts shorthand */
 	public end(time: string): this
 	{
 		this._end = this._parseTime(time)[0];
 		return this;
+	}
+
+	/**
+	 * Return a prepared Event object ready for calendar insertion
+	 */
+	public prepare(): Event
+	{
+		return new Event(this._colorId, this._summary, this._description, this._start, this._end);
 	}
 
 	/**
