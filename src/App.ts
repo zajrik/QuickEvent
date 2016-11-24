@@ -28,8 +28,7 @@ const argv: any = yargs
 	.options(argOpts)
 	.argv;
 
-const windows: boolean = process.platform === 'win32';
-const homeDir: string = process.env[windows ? 'USERPROFILE' : 'HOME'];
+const homeDir: string = process.env.USERPROFILE || process.env.HOME;
 const qeDir: string = path.join(homeDir, '.qe');
 if (!dirExists(qeDir)) fs.mkdirSync(qeDir);
 
