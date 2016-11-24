@@ -61,12 +61,12 @@ export default class EventBuilder
 		const time: RegExpMatchArray = timeString.match(regex);
 		let hour: int = parseInt(time[1]);
 		let minutes: int = parseInt(time[2]) || 0;
-		let meridian: string = time[3] || null;
+		let am: boolean = time[3] === 'a' ? true : time[3] === 'p' ? false : null;
 
 		let hr: string;
 		let min: string;
 
-		if (!meridian && ([hour, minutes].join('')).length < 4)
+		if (am === null && ([hour, minutes].join('')).length < 4)
 			throw new Error(`Provided time format is invalid: ${timeString}`);
 
 		if (minutes > 59)
@@ -74,10 +74,10 @@ export default class EventBuilder
 			minutes -= 60;
 			hour++;
 		}
-		if (hour <  12 && meridian === 'p') hour += 12;
+		if (hour <  12 && !am) hour += 12;
 
-		if (hour <  10 && meridian === 'a') hr = `0${hour}`;
-		if (hour === 12 && meridian === 'a') hr = '00';
+		if (hour <  10 && am) hr = `0${hour}`;
+		if (hour === 12 && am) hr = '00';
 		if (minutes === 0) min = '00';
 
 
