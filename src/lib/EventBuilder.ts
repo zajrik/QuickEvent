@@ -4,6 +4,11 @@ import * as moment from 'moment';
 
 type int = number;
 type float = number;
+
+/** 
+ * Represents a tuple containing a parsed time string,
+ * the parsed hour, and the parsed minute
+ */
 type TimeArray = [string, int, int];
 
 export default class EventBuilder
@@ -137,17 +142,20 @@ export default class EventBuilder
 
 	/**
 	 * Get the time between a start time and end time
+	 * 
+	 * Returns a tuple containing the floating point length
+	 * and number of days spanned
 	 */
 	private _getLength(start: TimeArray, end: TimeArray): [float, int]
 	{
-		var hours: int = 0;
-		var daySpan: int = 0;
-		var mins: int = 0;
+		const startHr: int = start[1];
+		const endHr: int = end[1];
+		const startMin: int = start[2];
+		const endMin: int = end[2];
 
-		var startHr: int = start[1];
-		var endHr: int = end[1];
-		var startMin: int = start[2];
-		var endMin: int = end[2];
+		let hours: int = 0;
+		let daySpan: int = 0;
+		let mins: int = 0;
 
 		if (startHr < endHr) hours = endHr - startHr;
 		else if (startHr > endHr) daySpan = 1;
