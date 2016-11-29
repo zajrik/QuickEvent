@@ -1,5 +1,7 @@
 'use strict';
 import { LocalStorage } from 'node-localstorage';
+import EventBuilder from './lib/EventBuilder';
+import Event from './lib/structures/Event';
 import GoogleAuth from './lib/GoogleAuth';
 import Calendar from './lib/Calendar';
 import * as yargs from 'yargs';
@@ -39,7 +41,18 @@ async function main(): Promise<any>
 	const scopes: string[] = ['https://www.googleapis.com/auth/calendar'];
 	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
 	await auth.authorize();
-	const calendar: Calendar = new Calendar(auth.client);
-	console.log(await calendar.fetchUpcomingEvents());
+	// const calendar: Calendar = new Calendar(auth.client);
+	// console.log(await calendar.fetchUpcomingEvents());
+	let event: Event = new EventBuilder()
+		.color(2)
+		.year(2016)
+		.month(11)
+		.day(10)
+		.summary('foo')
+		.description('bar')
+		.start('10p')
+		.end('830a')
+		.prepare();
+	console.log(event);
 }
 main().catch(console.error);

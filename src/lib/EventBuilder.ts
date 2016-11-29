@@ -38,9 +38,7 @@ export default class EventBuilder
 	/** Set the year the event takes place */
 	public year(year: int): this { this._year = year; return this; }
 
-	/**
-	 * Set the start time of the event. Accepts shorthand
-	 */
+	/** Set the start time of the event. Accepts shorthand */
 	public start(time: string): this
 	{
 		this._start = this._parseTime(time);
@@ -54,9 +52,7 @@ export default class EventBuilder
 		return this;
 	}
 
-	/**
-	 * Return a prepared Event object ready for calendar insertion
-	 */
+	/** Return a prepared Event object ready for calendar insertion */
 	public prepare(): Event
 	{
 		if (!this._day) throw new Error('Events must have a day to take place');
@@ -76,7 +72,7 @@ export default class EventBuilder
 		let dateString: (time: string) => string = (time: string) => {
 			let monthString: string = month < 10 ? `0${month}` : month.toString();
 			let dayString: string = day < 10 ? `0${day}` : day.toString();
-			return `${year}-${month}-${day}T${time}`;
+			return `${year}-${monthString}-${dayString}T${time}`;
 		};
 
 		const startString: string = dateString(this._start[0]);
@@ -133,6 +129,8 @@ export default class EventBuilder
 		if (hour <  10 && am) hr = `0${hour}`;
 		if (hour === 12 && am) hr = '00';
 		if (minutes === 0) min = '00';
+		if (!hr) hr = hour.toString();
+		if (!min) min = minutes.toString();
 
 		return [`${hr}:${min}:00`, hour, minutes];
 	}
