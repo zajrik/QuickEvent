@@ -92,17 +92,13 @@ export default class GoogleAuth
 		return client;
 	}
 
-	/**
-	 * Store the auth token
-	 */
+	/** Store auth token */
 	private storeToken(token: Token): void
 	{
 		this.storage.setItem('token', JSON.stringify(token));
 	}
 
-	/**
-	 * Retrieve the auth token
-	 */
+	/** Retrieve auth token */
 	private getToken(): Token
 	{
 		return JSON.parse(this.storage.getItem('token'));
@@ -112,7 +108,7 @@ export default class GoogleAuth
 	 * Create a new oauth2Client for this instance from the credentials
 	 * suppplied on initialization
 	 */
-	public async authorize(): Promise<any>
+	public async authorize(): Promise<void>
 	{
 		const clientSecret: string = this.credentials.installed.client_secret;
 		const clientId: string = this.credentials.installed.client_id;

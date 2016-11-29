@@ -7,6 +7,7 @@ import Calendar from './lib/Calendar';
 import * as yargs from 'yargs';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as moment from 'moment-timezone';
 import dirExists from './lib/util/DirExists';
 
 const argOpts: any = {
@@ -41,18 +42,22 @@ async function main(): Promise<any>
 	const scopes: string[] = ['https://www.googleapis.com/auth/calendar'];
 	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
 	await auth.authorize();
-	// const calendar: Calendar = new Calendar(auth.client);
-	// console.log(await calendar.fetchUpcomingEvents());
+	const calendar: Calendar = new Calendar(auth.client);
+	console.log(await calendar.fetchUpcomingEvents());
 	let event: Event = new EventBuilder()
 		.color(2)
 		.year(2016)
 		.month(11)
-		.day(10)
+		.day(30)
 		.summary('foo')
 		.description('bar')
 		.start('10p')
 		.end('830a')
 		.prepare();
 	console.log(event);
+	if (await calendar.isDuplicate(event)) console.log('Cannot insert duplicate event');
+	else console.log(await calendar.insertEvent(event));
+	// console.log(await calendar.isDuplicate(event));
+	// console.log(await calendar.insertEvent(event));
 }
 main().catch(console.error);
