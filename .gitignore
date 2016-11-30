@@ -4,3 +4,4 @@ typings/*
 .vscode/*
 bin/*
 storage/*
+test.events

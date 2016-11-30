@@ -1,5 +1,6 @@
 'use strict';
 import { LocalStorage } from 'node-localstorage';
+import EventsFileReader from './lib/EventsFileReader';
 import EventBuilder from './lib/EventBuilder';
 import Event from './lib/structures/Event';
 import GoogleAuth from './lib/GoogleAuth';
@@ -8,8 +9,10 @@ import * as yargs from 'yargs';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as moment from 'moment-timezone';
+import { Moment } from 'moment';
 import dirExists from './lib/util/DirExists';
 
+const now: Moment = moment();
 const argOpts: any = {
 	f: {
 		alias: 'file',
@@ -23,6 +26,20 @@ const argOpts: any = {
 		nargs: 1,
 		describe: 'path to client secret json file',
 		type: 'string'
+	},
+	y: {
+		alias: 'year',
+		nargs: 1,
+		describe: 'the year to to create events for',
+		type: 'number',
+		default: now.format('YYYY')
+	},
+	m: {
+		alias: 'month',
+		nargs: 1,
+		describe: 'the month to to create events for',
+		type: 'number',
+		default: now.format('M')
 	}
 };
 
@@ -43,7 +60,7 @@ async function main(): Promise<any>
 	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
 	await auth.authorize();
 	const calendar: Calendar = new Calendar(auth.client);
-	console.log(await calendar.fetchUpcomingEvents());
+	// console.log(await calendar.fetchUpcomingEvents());
 	let event: Event = new EventBuilder()
 		.color(2)
 		.year(2016)
@@ -52,11 +69,13 @@ async function main(): Promise<any>
 		.summary('foo')
 		.description('bar')
 		.start('10p')
-		.end('10:30p')
+		.end('830a')
 		.prepare();
-	console.log(event);
-	if (await calendar.isDuplicate(event)) console.log('Cannot insert duplicate event');
-	else console.log(await calendar.insertEvent(event));
+	// console.log(event);
+	// if (await calendar.isDuplicate(event)) console.log('Cannot insert duplicate event');
+	// else console.log(await calendar.insertEvent(event));
+	// console.log(`Year: ${argv.y} | Month: ${argv.m}`);
+	const eventsFileReader: EventsFileReader = new EventsFileReader(argv.f);
 	// console.log(await calendar.isDuplicate(event));
 	// console.log(await calendar.insertEvent(event));
 }

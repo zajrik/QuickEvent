@@ -9,7 +9,7 @@ type float = number;
  * Represents a tuple containing a parsed time string,
  * the parsed hour, and the parsed minute
  */
-type TimeArray = [string, int, int];
+type ParsedTime = [string, int, int];
 
 export default class EventBuilder
 {
@@ -19,8 +19,8 @@ export default class EventBuilder
 	private _day: int;
 	private _month: int;
 	private _year: int;
-	private _start: TimeArray;
-	private _end: TimeArray;
+	private _start: ParsedTime;
+	private _end: ParsedTime;
 	private _length: [float, int];
 
 	public constructor() {}
@@ -110,7 +110,7 @@ export default class EventBuilder
 	/**
 	 * Parse time shorthand (eg. 930a, 7p, 12:38a)
 	 */
-	private _parseTime(timeString: string): TimeArray
+	private _parseTime(timeString: string): ParsedTime
 	{
 		const regex: RegExp = /^(\d{1,2})(?::?(\d{2}))?(?:(a|p)m?)?$/;
 		const time: RegExpMatchArray = timeString.match(regex);
@@ -146,7 +146,7 @@ export default class EventBuilder
 	 * Returns a tuple containing the floating point length
 	 * and number of days spanned
 	 */
-	private _getLength(start: TimeArray, end: TimeArray): [float, int]
+	private _getLength(start: ParsedTime, end: ParsedTime): [float, int]
 	{
 		const startHr: int = start[1];
 		const endHr: int = end[1];
