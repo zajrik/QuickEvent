@@ -154,11 +154,11 @@ export default class EventBuilder
 		const endMin: int = end[2];
 
 		let hours: int = 0;
-		let daySpan: int = 0;
 		let mins: int = 0;
+		let daySpan: int = 0;
 
 		if (startHr < endHr) hours = endHr - startHr;
-		else if (startHr > endHr) daySpan = 1;
+		else if (startHr > endHr || (startHr === endHr && startMin === endMin)) daySpan = 1;
 
 		if (daySpan > 0) hours = (24 - startHr) + endHr;
 
