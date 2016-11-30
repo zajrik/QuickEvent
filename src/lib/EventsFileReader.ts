@@ -24,13 +24,14 @@ export default class EventsFileReader
 			this._file = fs.readFileSync(path.resolve(file))
 				.toString()
 				.split('\n')
-				.map(line => line.replace('\r', ''));
+				.map(line => line.replace('\r', ''))
+				.filter(line => line !== '');
 		}
 		catch (err)
 		{
 			throw new Error(Constants.errors.EVENTS_FILE_LOAD(err));
 		}
-
+		console.log(this._file);
 		this._eventRegex = /^(\d{1,2}) (\d{1,2}(?::?\d{2})?[ap]?m?) (\d{1,2}(?::?\d{2})?[ap]?m?)(?: ([^\|<]+))?(?: \| ([^\|<]+))?(?: << (\d{1,2}))?$/;
 		const colorRegex: RegExp = /color (\d{1,2})/;
 
