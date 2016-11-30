@@ -52,7 +52,7 @@ async function main(): Promise<any>
 		.summary('foo')
 		.description('bar')
 		.start('10p')
-		.end('830a')
+		.end('10:30p')
 		.prepare();
 	console.log(event);
 	if (await calendar.isDuplicate(event)) console.log('Cannot insert duplicate event');

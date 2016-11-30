@@ -75,7 +75,7 @@ export default class Calendar
 		const start: string = moment.tz(event.start.dateTime, moment.tz.guess()).format();
 		const end: string = moment.tz(event.end.dateTime, moment.tz.guess()).format();
 		const potentialDuplicates: any[] = await this.fetchEventsInRange(start, end);
-		const duplicates: any[] = potentialDuplicates.map(e =>
+		const duplicates: any[] = potentialDuplicates.filter(e =>
 			e.start.dateTime === start
 			&& e.end.dateTime === end
 			&& e.summary === event.summary);
