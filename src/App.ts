@@ -1,16 +1,17 @@
 'use strict';
 import { LocalStorage } from 'node-localstorage';
-import EventsFileReader from './lib/EventsFileReader';
-import EventBuilder from './lib/EventBuilder';
-import Event from './lib/structures/Event';
+import { Moment } from 'moment';
+
 import GoogleAuth from './lib/GoogleAuth';
 import Calendar from './lib/Calendar';
+import EventsFileReader from './lib/EventsFileReader';
+import Event from './lib/structures/Event';
+import dirExists from './lib/util/DirExists';
+
+import * as moment from 'moment-timezone';
 import * as yargs from 'yargs';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as moment from 'moment-timezone';
-import { Moment } from 'moment';
-import dirExists from './lib/util/DirExists';
 
 const now: Moment = moment();
 const argOpts: any = {
@@ -32,14 +33,14 @@ const argOpts: any = {
 		nargs: 1,
 		describe: 'the year to to create events for',
 		type: 'number',
-		default: now.format('YYYY')
+		default: parseInt(now.format('YYYY'))
 	},
 	m: {
 		alias: 'month',
 		nargs: 1,
 		describe: 'the month to to create events for',
 		type: 'number',
-		default: now.format('M')
+		default: parseInt(now.format('M'))
 	}
 };
 
@@ -58,25 +59,39 @@ async function main(): Promise<any>
 {
 	const scopes: string[] = ['https://www.googleapis.com/auth/calendar'];
 	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
+
+	console.log('Authorizing...');
 	await auth.authorize();
+	console.log('Authorization complete!');
+
 	const calendar: Calendar = new Calendar(auth.client);
-	// console.log(await calendar.fetchUpcomingEvents());
-	let event: Event = new EventBuilder()
-		.color(2)
-		.year(2016)
-		.month(11)
-		.day(30)
-		.summary('foo')
-		.description('bar')
-		.start('10p')
-		.end('830a')
-		.prepare();
-	// console.log(event);
-	// if (await calendar.isDuplicate(event)) console.log('Cannot insert duplicate event');
-	// else console.log(await calendar.insertEvent(event));
-	// console.log(`Year: ${argv.y} | Month: ${argv.m}`);
+
+	console.log('Reading events file...');
 	const eventsFileReader: EventsFileReader = new EventsFileReader(argv.f);
-	// console.log(await calendar.isDuplicate(event));
-	// console.log(await calendar.insertEvent(event));
+	console.log('Events file reading complete!');
+
+	console.log('Creating events...');
+	const events: Event[] = eventsFileReader.generateEvents({ year: argv.y, month: argv.m });
+	for (let event of events)
+	{
+		if (await calendar.isDuplicate(event))
+		{
+			console.log(`Skipping duplicate event: ${event.start.dateTime}, ${event.summary}${event.description !== '' ? ` | ${event.description}` : ''}`);
+			continue;
+		}
+		else
+		{
+			try
+			{
+				await calendar.insertEvent(event);
+				console.log(`Event created: ${event.start.dateTime}, ${event.summary}${event.description !== '' ? ` | ${event.description}` : ''}`);
+			}
+			catch (err)
+			{
+				throw new Error(`There was an error inserting a calendar event:\n${err}`);
+			}
+		}
+	}
+	console.log('Finished creating events.');
 }
 main().catch(console.error);

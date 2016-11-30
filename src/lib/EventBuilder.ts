@@ -11,6 +11,9 @@ type float = number;
  */
 type ParsedTime = [string, int, int];
 
+/**
+ * Builds a calendar event using the provided build input methods
+ */
 export default class EventBuilder
 {
 	private _colorId: string;

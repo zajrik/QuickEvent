@@ -35,12 +35,12 @@ export type Oauth2Client = {
 /**
  * Handles creation and authorization of an Oauth2Client instance
  * for use with Google apis as well as storage of information
- * related to those purposes. Requires a node-localstorage insance
+ * related to those purposes. Requires a node-localstorage instance
  * to be passed upon creation
  */
 export default class GoogleAuth
 {
-	private credentials: ClientCredentials;
+	private _credentials: ClientCredentials;
 
 	public storage: LocalStorage;
 	public scopes: string[];
@@ -55,7 +55,7 @@ export default class GoogleAuth
 			throw new Error('You must provide a client_secret.json if this is the first time running.');
 		if (clientSecretPath) this.storage.setItem('clientSecretpath', path.resolve(clientSecretPath));
 
-		this.credentials = JSON.parse(fs.readFileSync(this.storage.getItem('clientSecretpath')).toString());
+		this._credentials = JSON.parse(fs.readFileSync(this.storage.getItem('clientSecretpath')).toString());
 	}
 
 	/**
@@ -72,7 +72,9 @@ export default class GoogleAuth
 		});
 
 		console.log(`Authorize this app by visiting this url:\n${authUrl}\n`);
-		const code: string = await prompt('Enter the code from that page here: ');
+		const code: string = await prompt('Enter the resulting code here: ');
+		prompt.done();
+
 		let token: Token;
 		try
 		{
@@ -80,11 +82,9 @@ export default class GoogleAuth
 			{
 				client.getToken(code, (err, newToken) => err ? reject(err) : resolve(newToken));
 			});
-			prompt.done();
 		}
 		catch (err)
 		{
-			prompt.done();
 			throw new Error(`Error while trying to retrieve access token: ${err}`);
 		}
 		this.storeToken(token);
@@ -110,9 +110,9 @@ export default class GoogleAuth
 	 */
 	public async authorize(): Promise<void>
 	{
-		const clientSecret: string = this.credentials.installed.client_secret;
-		const clientId: string = this.credentials.installed.client_id;
-		const redirectUrl: string = this.credentials.installed.redirect_uris[0];
+		const clientSecret: string = this._credentials.installed.client_secret;
+		const clientId: string = this._credentials.installed.client_id;
+		const redirectUrl: string = this._credentials.installed.redirect_uris[0];
 		const auth: any = new googleAuth();
 		this.client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
