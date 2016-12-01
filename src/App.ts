@@ -62,13 +62,13 @@ async function main(): Promise<any>
 
 	console.log('Authorizing...');
 	await auth.authorize();
-	console.log('Authorization complete!');
+	console.log('Authorization complete!\n');
 
 	const calendar: Calendar = new Calendar(auth.client);
 
 	console.log('Reading events file...');
 	const eventsFileReader: EventsFileReader = new EventsFileReader(argv.f);
-	console.log('Events file reading complete!');
+	console.log('Events file reading complete!\n');
 
 	console.log('Creating events...');
 	const events: Event[] = eventsFileReader.generateEvents({ year: argv.y, month: argv.m });
