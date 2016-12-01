@@ -26,7 +26,7 @@ export default class EventsFileReader
 			this._file = fs.readFileSync(path.resolve(file))
 				.toString()
 				.split('\n')
-				.map(line => line.replace('\r', ''))
+				.map(line => line.replace(/\r/g, ''))
 				.filter(line => line !== '');
 		}
 		catch (err)
