@@ -1,7 +1,9 @@
-'use strict';
+#!/usr/bin/env node
+
 import { LocalStorage } from 'node-localstorage';
 import { Moment } from 'moment';
 
+import Constants from './lib/util/Constants';
 import GoogleAuth from './lib/GoogleAuth';
 import Calendar from './lib/Calendar';
 import EventsFileReader from './lib/EventsFileReader';
@@ -55,7 +57,7 @@ if (!dirExists(qeDir)) fs.mkdirSync(qeDir);
 
 const storage: LocalStorage = new LocalStorage(path.join(qeDir, 'localstorage'));
 
-async function main(): Promise<any>
+async function main(): Promise<void>
 {
 	const scopes: string[] = ['https://www.googleapis.com/auth/calendar'];
 	const auth: GoogleAuth = new GoogleAuth(argv.secret, scopes, storage);
@@ -72,7 +74,7 @@ async function main(): Promise<any>
 
 	console.log('Creating events...');
 	const events: Event[] = eventsFileReader.generateEvents({ year: argv.y, month: argv.m });
-	for (let event of events)
+	for (const event of events)
 	{
 		if (await calendar.isDuplicate(event))
 		{
@@ -88,7 +90,7 @@ async function main(): Promise<any>
 			}
 			catch (err)
 			{
-				throw new Error(`There was an error inserting a calendar event:\n${err}`);
+				throw new Error(Constants.errors.CALENDAR_INSERT(err));
 			}
 		}
 	}

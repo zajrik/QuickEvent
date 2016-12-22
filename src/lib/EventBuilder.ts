@@ -1,9 +1,6 @@
-'use strict';
+import Constants from './util/Constants';
 import Event from './structures/Event';
 import * as moment from 'moment';
-
-type int = number;
-type float = number;
 
 /** 
  * Represents a tuple containing a parsed time string,
@@ -63,12 +60,12 @@ export default class EventBuilder
 	/** Return a prepared Event object ready for calendar insertion */
 	public prepare(): Event
 	{
-		if (!this._day) throw new Error('Events must have a day to take place');
-		if (!this._month) throw new Error('Events must have a month to take place');
-		if (!this._year) throw new Error('Events must have a year to take place');
-		if (!this._start) throw new Error('Events must have a start time');
-		if (!this._end) throw new Error('Events must have an end time');
-		if (!this._summary) throw new Error('Events must have a summary');
+		if (!this._day) throw new Error(Constants.errors.EVENT_DAY);
+		if (!this._month) throw new Error(Constants.errors.EVENT_MONTH);
+		if (!this._year) throw new Error(Constants.errors.EVENT_YEAR);
+		if (!this._start) throw new Error(Constants.errors.EVENT_START);
+		if (!this._end) throw new Error(Constants.errors.EVENT_END);
+		if (!this._summary) throw new Error(Constants.errors.EVENT_SUMMARY);
 
 		this._length = this._getLength(this._start, this._end);
 		let year: int = this._year;
@@ -125,7 +122,7 @@ export default class EventBuilder
 		let min: string;
 
 		if (am === null && ([hour, minutes].join('')).length < 4)
-			throw new Error(`Provided time format is invalid: ${timeString}`);
+			throw new Error(Constants.errors.TIME_SHORTHAND_FORMAT(timeString));
 
 		if (minutes > 59)
 		{

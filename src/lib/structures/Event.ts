@@ -1,4 +1,3 @@
-'use strict';
 import * as moment from 'moment-timezone';
 
 export default class Event

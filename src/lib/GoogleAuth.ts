@@ -1,11 +1,9 @@
-'use strict';
-import * as googleAuth from 'google-auth-library';
+import Constants from './util/Constants';
 import { LocalStorage } from 'node-localstorage';
+import * as googleAuth from 'google-auth-library';
 import * as prompt from 'prompt-promise';
 import * as path from 'path';
 import * as fs from 'fs';
-
-type int = number;
 
 type Token = {
 	access_token: string;
@@ -52,7 +50,7 @@ export default class GoogleAuth
 		this.storage = storage;
 
 		if (!clientSecretPath && !this.storage.getItem('clientSecretpath'))
-			throw new Error('You must provide a client_secret.json if this is the first time running.');
+			throw new Error(Constants.errors.CLIENT_SECRET_MISSING);
 		if (clientSecretPath) this.storage.setItem('clientSecretpath', path.resolve(clientSecretPath));
 
 		this._credentials = JSON.parse(fs.readFileSync(this.storage.getItem('clientSecretpath')).toString());
@@ -85,7 +83,7 @@ export default class GoogleAuth
 		}
 		catch (err)
 		{
-			throw new Error(`Error while trying to retrieve access token: ${err}`);
+			throw new Error(Constants.errors.TOKEN_ACCESS(err));
 		}
 		this.storeToken(token);
 		client.credentials = token;

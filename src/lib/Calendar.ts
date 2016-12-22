@@ -1,10 +1,7 @@
-'use strict';
 import * as google from 'googleapis';
 import * as moment from 'moment-timezone';
 import { Oauth2Client } from './GoogleAuth';
 import Event from './structures/Event';
-
-type int = number;
 
 /**
  * Represents an interface with a selected google calendar.

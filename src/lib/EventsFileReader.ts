@@ -1,11 +1,8 @@
-'use strict';
 import * as path from 'path';
 import * as fs from 'fs';
 import Constants from './util/Constants';
 import Event from './structures/Event';
 import EventBuilder from './EventBuilder';
-
-type int = number;
 
 /**
  * Handles loading and parsing of an events shorthand file
@@ -57,7 +54,7 @@ export default class EventsFileReader
 	public generateEvents(opts: { year: int, month: int }): Event[]
 	{
 		let events: Event[] = [];
-		for (let event of this._eventStrings)
+		for (const event of this._eventStrings)
 		{
 			const data: RegExpMatchArray = event.match(this._eventRegex);
 			const day: int = parseInt(data[1]);
